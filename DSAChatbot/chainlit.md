@@ -1,4 +1,4 @@
-# Welcome to DSA Chatbot! 🚀📚
+# AlgoGenie 🧞‍♂️
 
 ## Your AI Assistant for Data Structures and Algorithms
 

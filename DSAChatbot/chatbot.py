@@ -61,9 +61,9 @@ async def start():
         {"role": "system", "content": SYSTEM_PROMPT}
     ])
     
-    msg = cl.Message(content="Starting the DSA Chatbot...")
+    msg = cl.Message(content="Starting AlgoGenie...")
     await msg.send()
-    msg.content = "Hi, Welcome to Data Structures and Algorithms Bot. What is your query? You can also upload an image containing DSA problems or code."
+    msg.content = "Hi, Welcome to AlgoGenie! 🧞‍♂️ Your AI assistant for Data Structures and Algorithms. What would you like to learn about today? You can also upload an image containing DSA problems or code."
     await msg.update()
 
 @cl.on_message
