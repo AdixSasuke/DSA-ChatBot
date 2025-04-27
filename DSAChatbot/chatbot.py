@@ -5,6 +5,7 @@ import chainlit as cl
 import time
 import pytesseract
 import cv2
+import asyncio
 
 # Configure pytesseract path for Windows (you may need to update this path)
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
@@ -99,52 +100,86 @@ async def main(message: cl.Message):
     if messages is None:
         messages = [{"role": "system", "content": SYSTEM_PROMPT}]
     
-    # Show typing indicator with initial "Thinking..." text
-    async with cl.Step(name="Thinking...") as step:
-        step.stream = True
+    # Create a thinking step with dynamic name updating
+    step = cl.Step(name="Thinking...", type="thinking")
+    await step.send()
+    
+    try:
+        # Update thinking step periodically to show elapsed time
+        async def update_step_time():
+            elapsed = 0
+            while True:
+                elapsed = time.time() - start_time
+                step.name = f"Thinking... ({elapsed:.2f}s)"
+                await step.update()
+                if elapsed > 60:  # Don't update too frequently after a minute
+                    await asyncio.sleep(5)
+                elif elapsed > 30:  # Update every 2 seconds after 30 seconds
+                    await asyncio.sleep(2)
+                elif elapsed > 10:  # Update every second after 10 seconds
+                    await asyncio.sleep(1)
+                else:  # Update every 0.5 seconds at the start
+                    await asyncio.sleep(0.5)
+        
+        # Start the timer update task
+        timer_task = asyncio.create_task(update_step_time())
+        
+        # Get relevant documents from FAISS
+        docs = db.similarity_search(query, k=2)
+        
+        # Format context from documents
+        context = "\n".join([doc.page_content for doc in docs])
+        
+        # Add context to the user query
+        enhanced_query = f"Based on this context: {context}\n\nMy question is: {query}"
+        
+        # Add the enhanced user message to history
+        messages.append({"role": "user", "content": enhanced_query})
+        
+        # Get response from Ollama with full message history
+        response = ollama.chat(
+            model="llama3.2:latest", 
+            messages=messages
+        )
+        
+        assistant_message = response['message']
+        response_text = assistant_message['content']
+        
+        # Add assistant response to history
+        messages.append({"role": "assistant", "content": response_text})
+        
+        # Limit history to last 10 exchanges (plus system prompt) to avoid context overflow
+        if len(messages) > 21:  # system prompt + 10 exchanges (20 messages)
+            messages = [messages[0]] + messages[-20:]
+        
+        # Update session history
+        cl.user_session.set("messages", messages)
+        
+        # Cancel the timer update task
+        timer_task.cancel()
+        
+        # Set final elapsed time
+        elapsed_time = time.time() - start_time
+        step.name = f"Thinking... ({elapsed_time:.2f}s)"
         await step.update()
         
-        try:
-            # Get relevant documents from FAISS
-            docs = db.similarity_search(query, k=2)
-            
-            # Format context from documents
-            context = "\n".join([doc.page_content for doc in docs])
-            
-            # Add context to the user query
-            enhanced_query = f"Based on this context: {context}\n\nMy question is: {query}"
-            
-            # Add the enhanced user message to history
-            messages.append({"role": "user", "content": enhanced_query})
-            
-            # Get response from Ollama with full message history
-            response = ollama.chat(
-                model="llama3.2:latest", 
-                messages=messages
-            )
-            
-            assistant_message = response['message']
-            response_text = assistant_message['content']
-            
-            # Add assistant response to history
-            messages.append({"role": "assistant", "content": response_text})
-            
-            # Limit history to last 10 exchanges (plus system prompt) to avoid context overflow
-            if len(messages) > 21:  # system prompt + 10 exchanges (20 messages)
-                messages = [messages[0]] + messages[-20:]
-            
-            # Update session history
-            cl.user_session.set("messages", messages)
-            
-            # Calculate elapsed time and update the step name to include timing
-            elapsed_time = time.time() - start_time
-            step.name = f"Thinking... ({elapsed_time:.2f}s)"
+        # End the step
+        await step.end()
+        
+        # Send response
+        await cl.Message(content=response_text).send()
+        
+    except Exception as e:
+        # Cancel timer task if it exists
+        if 'timer_task' in locals():
+            timer_task.cancel()
+        
+        error_msg = f"An error occurred while processing your request: {str(e)}"
+        print(error_msg)
+        await cl.Message(content=error_msg).send()
+        
+        # End the step with error status
+        if 'step' in locals():
+            step.name = f"Error after ({time.time() - start_time:.2f}s)"
             await step.update()
-            
-            # Send response without timing information in the content
-            await cl.Message(content=response_text).send()
-            
-        except Exception as e:
-            error_msg = f"An error occurred while processing your request: {str(e)}"
-            print(error_msg)
-            await cl.Message(content=error_msg).send()
+            await step.end()
