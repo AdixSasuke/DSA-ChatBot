@@ -1,0 +1,24 @@
+# Core dependencies
+langchain>=0.1.0
+langchain-community>=0.0.13
+chainlit>=1.0.0
+
+# LLM and Embeddings
+ollama>=0.1.27
+sentence-transformers>=2.2.2
+huggingface-hub>=0.19.4
+
+# Vector Database
+faiss-cpu>=1.7.4
+
+# Document Processing
+pypdf>=3.17.1
+
+# Machine Learning Libraries
+torch>=2.0.0
+transformers>=4.36.0
+accelerate>=0.24.1
+bitsandbytes>=0.41.1
+
+# Optional dependencies
+ctransformers>=0.2.27  # For local inference fallback
