@@ -10,6 +10,9 @@ A conversational AI assistant trained on Data Structures and Algorithms concepts
 -   **Interactive UI**: Built with Chainlit for a smooth chat experience
 -   **Vector Search**: Uses FAISS for efficient semantic search of concepts
 -   **Ollama Integration**: Powered by Ollama for fast, local LLM inference
+-   **OCR Capability**: Process images containing DSA problems or code snippets
+-   **Memory System**: Maintains conversation context for natural follow-up questions
+-   **Performance Metrics**: Shows query processing time in the interface
 -   **Easy to Update**: Simple process to update with new books or materials
 
 ## Setup
@@ -19,6 +22,7 @@ A conversational AI assistant trained on Data Structures and Algorithms concepts
 1. Python 3.8 or higher
 2. Required packages (install using requirements.txt)
 3. Ollama installed and running on your system
+4. Tesseract OCR installed on your system (for image processing)
 
 ### Installation
 
@@ -43,7 +47,14 @@ A conversational AI assistant trained on Data Structures and Algorithms concepts
         ollama pull llama3.2
         ```
 
-4. Configure paths in `ingest.py` (if needed):
+4. Install Tesseract OCR:
+
+    - Windows: Download from [GitHub](https://github.com/UB-Mannheim/tesseract/wiki) and add to PATH
+    - macOS: `brew install tesseract`
+    - Linux: `apt-get install tesseract-ocr`
+    - Update the tesseract path in `chatbot.py` if needed
+
+5. Configure paths in `ingest.py` (if needed):
     - `DATA_PATH`: Directory where your PDF documents are stored (default: 'sourcedata/')
     - `DB_FAISS_PATH`: Directory for the vector database (default: 'vectorstore/db_faiss')
 
@@ -74,6 +85,15 @@ A conversational AI assistant trained on Data Structures and Algorithms concepts
     chainlit run chatbot.py
     ```
 
+### Using the OCR Feature
+
+To use the OCR capability:
+
+1. Take a screenshot or photo of DSA code, problems, or diagrams
+2. Upload the image during your chat session or drag-and-drop into the chat interface
+3. The chatbot will extract text from the image and respond to the content
+4. You can also include a text question along with your image for more specific responses
+
 ## Updating with New Books
 
 To update the chatbot with new content:
@@ -89,6 +109,7 @@ To update the chatbot with new content:
 -   Modify the embedding model in `ingest.py` for different performance characteristics
 -   Change the LLM model in `chatbot.py` by updating the `model_name` parameter in the `get_ollama_response` function
 -   Customize the UI by editing `chainlit.md`
+-   Adjust OCR preprocessing parameters in `chatbot.py` for different image types
 
 ## License
 

@@ -20,5 +20,10 @@ transformers>=4.36.0
 accelerate>=0.24.1
 bitsandbytes>=0.41.1
 
+# OCR Libraries
+pytesseract>=0.3.10
+pillow>=10.0.0
+opencv-python>=4.8.0
+
 # Optional dependencies
 ctransformers>=0.2.27  # For local inference fallback
