@@ -44,6 +44,7 @@ async def main(message: cl.Message):
     # Show typing indicator
     async with cl.Step(name="Thinking...") as step:
         step.stream = True
+        step.show_timing = False  # <-- Hide the timer
         await step.update()
         
         try:

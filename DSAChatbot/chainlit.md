@@ -1,14 +1,26 @@
-# Welcome to Chainlit! 🚀🤖
+# Welcome to DSA Chatbot! 🚀📚
 
-Hi there, Developer! 👋 We're excited to have you on board. Chainlit is a powerful tool designed to help you prototype, debug and share applications built on top of LLMs.
+## Your AI Assistant for Data Structures and Algorithms
 
-## Useful Links 🔗
+This chatbot is designed to help you with Data Structures and Algorithms concepts, problems, and implementations. Ask any DSA-related questions and get instant, accurate responses powered by specialized AI.
 
-- **Documentation:** Get started with our comprehensive [Chainlit Documentation](https://docs.chainlit.io) 📚
-- **Discord Community:** Join our friendly [Chainlit Discord](https://discord.gg/k73SQ3FyUh) to ask questions, share your projects, and connect with other developers! 💬
+## Features ✨
 
-We can't wait to see what you create with Chainlit! Happy coding! 💻😊
+-   **Specialized in DSA**: Get explanations on algorithms, data structures, time complexity, and more
+-   **Memory System**: The chatbot remembers your conversation context for natural follow-up questions
+-   **Performance Metrics**: See how quickly your queries are processed
+-   **Custom Knowledge Base**: Built on quality DSA resources for accurate information
 
-## Welcome screen
+## Example Questions 🤔
 
-To modify the welcome screen, edit the `chainlit.md` file at the root of your project. If you do not want a welcome screen, just leave this file empty.
+-   "Explain the difference between trees and graphs"
+-   "What is the time complexity of quicksort?"
+-   "How does a hash table work?"
+-   "Explain dynamic programming with an example"
+-   "What's the best approach for detecting cycles in a linked list?"
+
+## Get Started
+
+Simply type your DSA question in the chat box below and press Enter. The chatbot will search its knowledge base and provide you with the most relevant answer.
+
+Happy learning! 💡💻
